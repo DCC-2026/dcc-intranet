@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Company Intranet</title>
+  <style>
+    body { font-family: Arial; margin: 0; background:#eef1f5; }
+    header { background:#2c3e50; color:white; padding:15px; text-align:center; }
+    .container { display:flex; }
+    .sidebar { width:200px; background:#34495e; color:white; padding:15px; height:100vh; }
+    .sidebar button { width:100%; margin-bottom:10px; padding:10px; border:none; background:#3d566e; color:white; cursor:pointer; }
+    .content { flex:1; padding:20px; }
+    .box { background:white; padding:15px; border-radius:10px; margin-bottom:20px; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🏢 Company Intranet</h1>
+</header>
+
+<div class="container">
+
+<div class="sidebar">
+  <button onclick="show('dashboard')">Dashboard</button>
+  <button onclick="show('files')">Files</button>
+</div>
+
+<div class="content">
+
+<div id="dashboard" class="page">
+  <div class="box">
+    <h2>📢 Announcements</h2>
+    <p>Welcome! Add updates here.</p>
+  </div>
+</div>
+
+<div id="files" class="page" style="display:none;">
+  <div class="box">
+    <h2>📁 Files</h2>
+    <ul>
+      <li><a href="files/sample.pdf" target="_blank">Sample File</a></li>
+    </ul>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function show(page){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(page).style.display='block';
+}
+</script>
+
+</body>
+</html>
