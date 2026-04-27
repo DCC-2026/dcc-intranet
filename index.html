@@ -1,56 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Company Intranet</title>
-  <style>
-    body { font-family: Arial; margin: 0; background:#eef1f5; }
-    header { background:#2c3e50; color:white; padding:15px; text-align:center; }
-    .container { display:flex; }
-    .sidebar { width:200px; background:#34495e; color:white; padding:15px; height:100vh; }
-    .sidebar button { width:100%; margin-bottom:10px; padding:10px; border:none; background:#3d566e; color:white; cursor:pointer; }
-    .content { flex:1; padding:20px; }
-    .box { background:white; padding:15px; border-radius:10px; margin-bottom:20px; }
-  </style>
+<meta charset="UTF-8">
+<title>Company Intranet</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+  }
+
+  /* HEADER */
+  .header {
+    background: #1f2a44;
+    color: white;
+    padding: 15px 25px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  /* LAYOUT */
+  .container {
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    background: #27364f;
+    height: 100vh;
+    padding-top: 20px;
+  }
+
+  .sidebar button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    padding-left: 20px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .sidebar button:hover {
+    background: #3a4d70;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    padding: 25px;
+  }
+
+  /* CARDS */
+  .card {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+
+  button.action {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #1f2a44;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  button.action:hover {
+    background: #324566;
+  }
+
+  a {
+    text-decoration: none;
+    color: #1f2a44;
+  }
+
+</style>
 </head>
 
 <body>
 
-<header>
-  <h1>🏢 Company Intranet</h1>
-</header>
+<div class="header">
+🏢 Company Intranet System
+</div>
 
 <div class="container">
 
-<div class="sidebar">
-  <button onclick="show('dashboard')">Dashboard</button>
-  <button onclick="show('files')">Files</button>
-</div>
-
-<div class="content">
-
-<div id="dashboard" class="page">
-  <div class="box">
-    <h2>📢 Announcements</h2>
-    <p>Welcome! Add updates here.</p>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button onclick="show('dashboard')">📊 Dashboard</button>
+    <button onclick="show('files')">📁 Files</button>
   </div>
-</div>
 
-<div id="files" class="page" style="display:none;">
-  <div class="box">
-    <h2>📁 Files</h2>
-    <ul>
-      <li><a href="files/sample.pdf" target="_blank">Sample File</a></li>
-    </ul>
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+
+      <div class="card">
+        <div class="title">📢 Announcements</div>
+        <textarea id="announcement" placeholder="Write announcement..."></textarea>
+        <button class="action" onclick="saveAnnouncement()">Save</button>
+        <p id="output"></p>
+      </div>
+
+    </div>
+
+    <!-- FILES -->
+    <div id="files" style="display:none;">
+
+      <div class="card">
+        <div class="title">📁 Upload File</div>
+        <input type="file" id="fileInput">
+        <button class="action" onclick="addFile()">Upload</button>
+      </div>
+
+      <div class="card">
+        <div class="title">📂 File List</div>
+        <ul id="fileList"></ul>
+      </div>
+
+    </div>
+
   </div>
-</div>
-
-</div>
 </div>
 
 <script>
+let files = [];
+
 function show(page){
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.getElementById(page).style.display='block';
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("files").style.display = "none";
+  document.getElementById(page).style.display = "block";
+}
+
+function saveAnnouncement(){
+  const text = document.getElementById("announcement").value;
+  document.getElementById("output").innerText = "Saved: " + text;
+}
+
+function addFile(){
+  const input = document.getElementById("fileInput");
+  const file = input.files[0];
+
+  if(!file){
+    alert("Select a file first");
+    return;
+  }
+
+  files.push(file);
+  renderFiles();
+}
+
+function renderFiles(){
+  const list = document.getElementById("fileList");
+  list.innerHTML = "";
+
+  files.forEach(f => {
+    const li = document.createElement("li");
+
+    const url = URL.createObjectURL(f);
+
+    li.innerHTML = `
+      📄 <a href="${url}" download="${f.name}">${f.name}</a>
+    `;
+
+    list.appendChild(li);
+  });
 }
 </script>
 
