@@ -1,197 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Company Intranet</title>
+  <title>DCC Intranet</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 0;
+      background: #f4f6f9;
+    }
 
-<style>
-  body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #f4f6f9;
-    color: #333;
-  }
+    header {
+      background: #1f3b64;
+      color: white;
+      padding: 15px 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-  /* HEADER */
-  .header {
-    background: #1f2a44;
-    color: white;
-    padding: 15px 25px;
-    font-size: 20px;
-    font-weight: bold;
-  }
+    .container {
+      padding: 20px;
+    }
 
-  /* LAYOUT */
-  .container {
-    display: flex;
-  }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
 
-  /* SIDEBAR */
-  .sidebar {
-    width: 220px;
-    background: #27364f;
-    height: 100vh;
-    padding-top: 20px;
-  }
+    input, button {
+      padding: 8px;
+      margin-top: 5px;
+    }
 
-  .sidebar button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    background: transparent;
-    color: white;
-    text-align: left;
-    padding-left: 20px;
-    cursor: pointer;
-    font-size: 14px;
-  }
+    button {
+      cursor: pointer;
+      background: #1f3b64;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
 
-  .sidebar button:hover {
-    background: #3a4d70;
-  }
+    .task {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
 
-  /* MAIN */
-  .main {
-    flex: 1;
-    padding: 25px;
-  }
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  /* CARDS */
-  .card {
-    background: white;
-    padding: 18px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
 
-  .title {
-    font-size: 18px;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-
-  input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-  }
-
-  button.action {
-    margin-top: 10px;
-    padding: 10px 15px;
-    background: #1f2a44;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  button.action:hover {
-    background: #324566;
-  }
-
-  a {
-    text-decoration: none;
-    color: #1f2a44;
-  }
-
-</style>
+    a {
+      font-size: 12px;
+      margin-left: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="header">
-🏢 Company Intranet System
-</div>
+<header>🏢 DCC Intranet</header>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <button onclick="show('dashboard')">📊 Dashboard</button>
-    <button onclick="show('files')">📁 Files</button>
+  <div class="card">
+    <h3>Add Task</h3>
+    <input type="text" id="taskInput" placeholder="Enter task..." />
+    <input type="file" id="fileInput" />
+    <br>
+    <button onclick="addTask()">Add Task</button>
   </div>
 
-  <!-- MAIN CONTENT -->
-  <div class="main">
-
-    <!-- DASHBOARD -->
-    <div id="dashboard">
-
-      <div class="card">
-        <div class="title">📢 Announcements</div>
-        <textarea id="announcement" placeholder="Write announcement..."></textarea>
-        <button class="action" onclick="saveAnnouncement()">Save</button>
-        <p id="output"></p>
-      </div>
-
-    </div>
-
-    <!-- FILES -->
-    <div id="files" style="display:none;">
-
-      <div class="card">
-        <div class="title">📁 Upload File</div>
-        <input type="file" id="fileInput">
-        <button class="action" onclick="addFile()">Upload</button>
-      </div>
-
-      <div class="card">
-        <div class="title">📂 File List</div>
-        <ul id="fileList"></ul>
-      </div>
-
-    </div>
-
+  <div class="card">
+    <h3>To-Do List</h3>
+    <div id="taskList"></div>
   </div>
+
 </div>
 
 <script>
-let files = [];
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-function show(page){
-  document.getElementById("dashboard").style.display = "none";
-  document.getElementById("files").style.display = "none";
-  document.getElementById(page).style.display = "block";
+function save() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function saveAnnouncement(){
-  const text = document.getElementById("announcement").value;
-  document.getElementById("output").innerText = "Saved: " + text;
-}
+function addTask() {
+  const text = document.getElementById("taskInput").value;
+  const fileInput = document.getElementById("fileInput");
 
-function addFile(){
-  const input = document.getElementById("fileInput");
-  const file = input.files[0];
+  if (!text) return alert("Enter a task");
 
-  if(!file){
-    alert("Select a file first");
-    return;
+  const file = fileInput.files[0];
+  let fileURL = null;
+  let fileName = null;
+
+  if (file) {
+    fileURL = URL.createObjectURL(file);
+    fileName = file.name;
   }
 
-  files.push(file);
-  renderFiles();
+  tasks.push({
+    text,
+    completed: false,
+    fileURL,
+    fileName
+  });
+
+  document.getElementById("taskInput").value = "";
+  fileInput.value = "";
+
+  save();
+  render();
 }
 
-function renderFiles(){
-  const list = document.getElementById("fileList");
+function toggleTask(index) {
+  tasks[index].completed = !tasks[index].completed;
+  save();
+  render();
+}
+
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  save();
+  render();
+}
+
+function render() {
+  const list = document.getElementById("taskList");
   list.innerHTML = "";
 
-  files.forEach(f => {
-    const li = document.createElement("li");
+  tasks.forEach((task, i) => {
+    const div = document.createElement("div");
+    div.className = "task";
 
-    const url = URL.createObjectURL(f);
+    div.innerHTML = `
+      <div class="left">
+        <input type="checkbox" ${task.completed ? "checked" : ""} 
+          onclick="toggleTask(${i})">
 
-    li.innerHTML = `
-      📄 <a href="${url}" download="${f.name}">${f.name}</a>
+        <span class="${task.completed ? "completed" : ""}">
+          ${task.text}
+        </span>
+
+        ${task.fileURL ? `<a href="${task.fileURL}" target="_blank">📎 ${task.fileName}</a>` : ""}
+      </div>
+
+      <button onclick="deleteTask(${i})">❌</button>
     `;
 
-    list.appendChild(li);
+    list.appendChild(div);
   });
 }
+
+render();
 </script>
 
 </body>
